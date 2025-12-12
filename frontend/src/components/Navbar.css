@@ -1,8 +1,11 @@
 .navbar {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #121624, #0f1118);
   color: white;
   padding: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+  position: sticky;
+  top: 0;
+  z-index: 999;
 }
 
 .navbar-container {
@@ -21,14 +24,15 @@
 
 .navbar-logo h2 {
   margin: 0;
-  padding: 20px 0;
+  padding: 18px 0;
   font-size: 24px;
+  letter-spacing: 0.5px;
 }
 
 .navbar-menu {
   display: flex;
   list-style: none;
-  gap: 10px;
+  gap: 8px;
   margin: 0;
   padding: 0;
 }
@@ -36,35 +40,44 @@
 .navbar-menu li a {
   color: white;
   text-decoration: none;
-  padding: 20px 16px;
+  padding: 14px 16px;
   display: block;
-  transition: background-color 0.3s;
-  border-radius: 4px;
+  transition: all 0.25s ease;
+  border-radius: 10px;
+  position: relative;
+}
+
+.navbar-menu li a::after {
+  content: '';
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 8px;
+  height: 2px;
+  background: linear-gradient(90deg, #5b8def, #8a7bff);
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.25s ease;
 }
 
 .navbar-menu li a:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(255, 255, 255, 0.08);
+  transform: translateY(-1px);
+}
+.navbar-menu li a:hover::after {
+  transform: scaleX(1);
 }
 
 .navbar-menu li a.active {
-  background-color: rgba(255, 255, 255, 0.2);
-  font-weight: 600;
+  background: rgba(91, 141, 239, 0.15);
+  font-weight: 700;
+  box-shadow: 0 8px 20px rgba(91,141,239,0.25);
 }
+.navbar-menu li a.active::after { transform: scaleX(1); }
 
 @media (max-width: 768px) {
-  .navbar-container {
-    flex-direction: column;
-    padding: 10px;
-  }
-
-  .navbar-menu {
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  .navbar-menu li a {
-    padding: 10px 12px;
-    font-size: 14px;
-  }
+  .navbar-container { flex-direction: column; padding: 10px; }
+  .navbar-menu { flex-wrap: wrap; justify-content: center; }
+  .navbar-menu li a { padding: 10px 12px; font-size: 14px; }
 }
 

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
+const adminAuth = require('../middleware/adminAuth');
 
 // Get all departments
 router.get('/', async (req, res) => {
@@ -71,6 +72,66 @@ router.get('/:id', async (req, res) => {
       return res.status(404).json({ error: 'Department not found' });
     }
     res.json(rows[0]);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Create department
+router.post('/', adminAuth, async (req, res) => {
+  try {
+    const { Department_Name, Department_Type, Location, Contact_Email, Faculty_ID } = req.body;
+    const [result] = await db.query(
+      `INSERT INTO DEPARTMENT (Department_Name, Department_Type, Location, Contact_Email, Faculty_ID)
+       VALUES (?, ?, ?, ?, ?)`,
+      [Department_Name, Department_Type, Location, Contact_Email, Faculty_ID]
+    );
+    res.json({ id: result.insertId, message: 'Department created successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Update department
+router.put('/:id', adminAuth, async (req, res) => {
+  try {
+    const allowedFields = ['Department_Name', 'Department_Type', 'Location', 'Contact_Email', 'Faculty_ID'];
+    const fields = [];
+    const values = [];
+
+    Object.entries(req.body).forEach(([key, value]) => {
+      if (value !== undefined && allowedFields.includes(key)) {
+        fields.push(`${key} = ?`);
+        values.push(value);
+      }
+    });
+
+    if (fields.length === 0) {
+      return res.status(400).json({ error: 'No fields to update' });
+    }
+
+    values.push(req.params.id);
+    const query = `UPDATE DEPARTMENT SET ${fields.join(', ')} WHERE Department_ID = ?`;
+    const [result] = await db.query(query, values);
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Department not found' });
+    }
+
+    res.json({ message: 'Department updated successfully' });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete department
+router.delete('/:id', adminAuth, async (req, res) => {
+  try {
+    const [result] = await db.query('DELETE FROM DEPARTMENT WHERE Department_ID = ?', [req.params.id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Department not found' });
+    }
+    res.json({ message: 'Department deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

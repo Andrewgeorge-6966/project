@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../config/database');
+const adminAuth = require('../middleware/adminAuth');
 
 // Get all employees
 router.get('/', async (req, res) => {
@@ -41,7 +42,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Create employee
-router.post('/', async (req, res) => {
+router.post('/', adminAuth, async (req, res) => {
   try {
     const {
       First_Name, Middle_Name, Last_Name, Arabic_Name, Gender, Nationality,
@@ -77,7 +78,7 @@ router.post('/', async (req, res) => {
 });
 
 // Update employee
-router.put('/:id', async (req, res) => {
+router.put('/:id', adminAuth, async (req, res) => {
   try {
     const fields = [];
     const values = [];
@@ -144,6 +145,19 @@ router.get('/:id/performance', async (req, res) => {
       ORDER BY a.Appraisal_Date DESC
     `, [req.params.id]);
     res.json(rows);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Delete employee
+router.delete('/:id', adminAuth, async (req, res) => {
+  try {
+    const [result] = await db.query('DELETE FROM EMPLOYEE WHERE Employee_ID = ?', [req.params.id]);
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Employee not found' });
+    }
+    res.json({ message: 'Employee deleted successfully' });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
