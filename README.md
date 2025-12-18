@@ -239,8 +239,3 @@ The database includes the following main entities:
 4. **Module Not Found**:
    - Run `npm install` in both backend and frontend directories
    - Delete `node_modules` and reinstall if needed
-
-## License
-
-This project is created for educational purposes.
-
